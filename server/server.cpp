@@ -24,6 +24,7 @@
 #include <signal.h>
 #include <string>
 #include <iostream>
+#include <regex>
 #include "functions.h"
 #include "User.h"
 
@@ -342,6 +343,7 @@ int main(void)
 				}
 				if(activeUser == username)
 				{
+					bool valid = true;
 					string startTime, endTime, place, content;
 					//add appt here
 					prompt = "Enter start date with format \"HH:MM MM/DD/YYYY\"";
@@ -349,40 +351,58 @@ int main(void)
 					{
 						numbytes = recv(new_fd, recvbuf, 128, 0);
 						startTime = recvbuf;
+
+						if(startTime.size() != 16)
+						{
+							strcpy(recvbuf, "Improper start time date format. Operation cancelled.");
+							valid = false;
+						}
+
 					}
 					
-					prompt = "Enter end date with format \"HH:MM MM/DD/YYYY\"";
-					if(send(new_fd, prompt.c_str(), numbytes, 0) != -1)
+					if(valid)
 					{
-						numbytes = recv(new_fd, recvbuf, 128, 0);
-						endTime = recvbuf;
-					}
-
-					if(ApptConflict(username, startTime, endTime))
-					{
-						strcpy(recvbuf, "ERROR: Time conflict. Unable to add appointment.");
-					}
-					else
-					{
-
-						prompt = "Enter place for appointment";
+						prompt = "Enter end date with format \"HH:MM MM/DD/YYYY\"";
 						if(send(new_fd, prompt.c_str(), numbytes, 0) != -1)
 						{
 							numbytes = recv(new_fd, recvbuf, 128, 0);
-							place = recvbuf;
+							endTime = recvbuf;
+							if(endTime.size() != 16)
+							{
+								strcpy(recvbuf, "Improper end time date format. Operation Cancelled.");
+								valid = false;
+							}
 						}
-
-						prompt = "Enter contents of appointment";
-						if(send(new_fd, prompt.c_str(), numbytes, 0) != -1)
+						
+						if(valid)
 						{
-							numbytes = recv(new_fd, recvbuf, 128, 0);
-							content = recvbuf;
+							if(ApptConflict(username, startTime, endTime))
+							{
+								strcpy(recvbuf, "ERROR: Time conflict. Unable to add appointment.");
+							}
+							else
+							{
+		
+								prompt = "Enter place for appointment";
+								if(send(new_fd, prompt.c_str(), numbytes, 0) != -1)
+								{
+									numbytes = recv(new_fd, recvbuf, 128, 0);
+									place = recvbuf;
+								}
+		
+								prompt = "Enter contents of appointment";
+								if(send(new_fd, prompt.c_str(), numbytes, 0) != -1)
+								{
+									numbytes = recv(new_fd, recvbuf, 128, 0);
+									content = recvbuf;
+								}
+		
+								AddAppt(username, startTime, endTime, place, content);
+		
+		
+								strcpy(recvbuf, "appt added successfully");
+							}
 						}
-
-						AddAppt(username, startTime, endTime, place, content);
-
-
-						strcpy(recvbuf, "appt added successfully");
 					}
 				}
 				
@@ -423,11 +443,42 @@ int main(void)
 		}
 		
 
+		//------------------ VIEW APPTS ----------------------//
+		else if(strncmp(recvbuf, "view appts", 10) == 0)
+		{
+			string prompt = "What woul you like to view apartments by? [year/month/day/time]";
+			if(send(new_fd, prompt.c_str(), numbytes, 0) != -1)
+			{
+				numbytes = recv(new_fd, recvbuf, 128, 0);
+				string response = recvbuf;
+				if(response == "year")
+				{
+					strcpy(recvbuf, "yearly appts");
+				}
+				else if(response == "month")
+				{
+					strcpy(recvbuf, "monthly appts");
+				}
+				else if(response == "day")
+				{
+					strcpy(recvbuf, "daily appts");
+				}
+				else if(response == "time")
+				{
+					strcpy(recvbuf, "time appts");
+				}
+				else
+				{
+					strcpy(recvbuf, "Invalid selection. Returning to start.");
+				}
+			}
+		}
+		
 		//------------------ HELP ----------------------//
 		else if(strncmp(recvbuf, "help", 4) == 0)
 		{
 
-			strcpy(recvbuf,  "\nadd user\ndelete user\nmodify user\nadd appt\nremove appt\nmodify appt\nupdate appt\ndisplay appt");
+			strcpy(recvbuf,  "\nadd user\ndelete user\nmodify user\nadd appt\nremove appt\nmodify appt\nupdate appt\nview appts\n");
 		}
 
 		//--------------------------------------------------------------//

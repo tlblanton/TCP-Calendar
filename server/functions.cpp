@@ -595,6 +595,62 @@ bool DeleteAppt(string username, int toDelete)
 }
 
 
+string ViewAppts(string username, string by)
+{
+    std::vector<string> lines;
+    ifstream infile;
+    infile.open("appts.txt");
+    string line;
+    
+    while(getline(infile, line))
+    {
+        lines.push_back(line);
+    }
+    infile.close();
+    
+    
+    int deleteNum = 1;
+    
+    string returnAppts = "";
+    
+    for(int i = 0; i < lines.size(); ++i)
+    {
+        std::stringstream ss(lines[i]);
+        string name, place, content,
+        int startHour, startMinutes, startMonth, startDay, startYear;
+        int endHours, endMinutes, endMonth, endDay, endYear;
+        
+        
+        getline(ss, name, ',');
+        getline(ss, startHour, ':');
+        getline(ss, startMinutes, ' ');
+        getline(ss, startMonth, '/');
+        getline(ss, startDay, '/');
+        getline(ss, startYear, ',');
+        
+        getline(ss, endHour, ':');
+        getline(ss, endMinutes, ' ');
+        getline(ss, endMonth, '/');
+        getline(ss, endDay, '/');
+        getline(ss, endYear, ',');
+        
+        getline(ss, place, ',');
+        getline(ss, content);
+        
+        
+        if(name == username)
+        {
+            if(by == "year")
+            {
+                if()
+            }
+		}
+        
+        
+        
+    }
+}
+
 
 
 
