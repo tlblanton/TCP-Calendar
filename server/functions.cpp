@@ -608,7 +608,7 @@ string ViewApptsByDay(string username, string yearParam, string monthParam, stri
     infile.close();
     
     
-    int deleteNum = 1;
+    int findNum = 1;
     
     string returnAppts = "";
     
@@ -669,18 +669,18 @@ string ViewApptsByDay(string username, string yearParam, string monthParam, stri
                     
                     
                     
-                    cout << "month find success" << endl;
-                    
-                    cout << "startDayParamInt: " << startDayParamInt << endl;
-                    cout << "startDayInt: " << startDayInt << endl;
-                    cout << "endDayParamInt" << endDayParamInt << endl;
-                    cout << "endDayInt: " << endDayInt << endl;
+//                    cout << "month find success" << endl;
+//
+//                    cout << "startDayParamInt: " << startDayParamInt << endl;
+//                    cout << "startDayInt: " << startDayInt << endl;
+//                    cout << "endDayParamInt" << endDayParamInt << endl;
+//                    cout << "endDayInt: " << endDayInt << endl;
                     
                     
                     if((startDayInt >= startDayParamInt && startDayInt <= endDayParamInt) || (endDayInt >= startDayParamInt && endDayInt <= endDayParamInt))
                     {
                         cout << "We have a day winner" << endl;
-                        returnAppts += ("\n" + content + ":" + startMonth + "/" + startDay + "/" + startYear);
+                        returnAppts += ("\n- " + content + " -> " + startHour + ":" + startMinutes + " " + startMonth + "/" + startDay + "/" + startYear);
                     }
                 }
                 

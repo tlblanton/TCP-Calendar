@@ -460,6 +460,7 @@ int main(void)
                     string response = recvbuf;
                     if(response == "year")
                     {
+                        //-------BY YEAR------//
                         string startYear, endYear;
                         strcpy(recvbuf, "yearly appts");
                         prompt = "specify start year: ";
@@ -477,6 +478,7 @@ int main(void)
                         string yearlyAppts = ViewAppts(username, "year", startYear, endYear);
                         strcpy(recvbuf, yearlyAppts.c_str());
                     }
+                    //-------BY MONTH------//
                     else if(response == "month")
                     {
                         string mon, yr;
@@ -496,6 +498,7 @@ int main(void)
                         strcpy(recvbuf, yearlyAppts.c_str());
                         
                     }
+                    //-------BY DAY RANGE------//
                     else if(response == "day")
                     {
                         string mon, yr, startDay, endDay;
@@ -506,21 +509,21 @@ int main(void)
                             mon = recvbuf;
                         }
                         
-                        prompt = "Specify start Date: ";
+                        prompt = "Specify start Date for search (left bound): ";
                         if(send(new_fd, prompt.c_str(), numbytes, 0) != -1)
                         {
                             numbytes = recv(new_fd, recvbuf, 128, 0);
                             startDay = recvbuf;
                         }
                         
-                        prompt = "Specify end Date: ";
+                        prompt = "Specify end Date for search (right bound): ";
                         if(send(new_fd, prompt.c_str(), numbytes, 0) != -1)
                         {
                             numbytes = recv(new_fd, recvbuf, 128, 0);
                             endDay = recvbuf;
                         }
                         
-                        prompt = mon + " of which year? ";
+                        prompt = "Specify year: ";
                         if(send(new_fd, prompt.c_str(), numbytes, 0) != -1)
                         {
                             numbytes = recv(new_fd, recvbuf, 128, 0);
@@ -530,8 +533,6 @@ int main(void)
                         
                         
                         strcpy(recvbuf, dailyAppts.c_str());
-                        
-                        //strcpy(recvbuf, "daily appts");
                     }
                     else if(response == "time")
                     {
@@ -548,7 +549,6 @@ int main(void)
 		//------------------ HELP ----------------------//
 		else if(strncmp(recvbuf, "help", 4) == 0)
 		{
-
 			strcpy(recvbuf,  "\nadd user\ndelete user\nmodify user\nadd appt\nremove appt\nmodify appt\nupdate appt\nview appts\n");
 		}
 
