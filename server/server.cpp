@@ -27,6 +27,7 @@
 #include <regex>
 #include "functions.h"
 #include "User.h"
+#include <sstream>
 
 
 #define MYPORT 3780    // the port users will be connecting to
@@ -318,96 +319,164 @@ int main(void)
 		//------------------ ADD APPOINTMENT ----------------------//
 		else if(strncmp(recvbuf, "add appt", 8) == 0)
 		{
-			string prompt = "enter username for appointment log: ";	
-			if(send(new_fd, prompt.c_str(), numbytes, 0) != -1)
-			{
-				numbytes = recv(new_fd, recvbuf, 128, 0);
-				username = recvbuf;
-				if(username != activeUser)
-				{
-					prompt = "Enter password to login and add appt:";
-					if(send(new_fd, prompt.c_str(), numbytes, 0) != -1)
-					{
-						numbytes = recv(new_fd, recvbuf, 128, 0);
-						password = recvbuf;
-						if(Login(username, password) != "")
-						{
-							//error case
-							strcpy(recvbuf, "Unable to login user and so unable to add appt.");
-						}
-						else
-						{
-							activeUser = username;
-						}
-					}
-				}
-				if(activeUser == username)
-				{
-					bool valid = true;
-					string startTime, endTime, place, content;
-					//add appt here
-					prompt = "Enter start date with format \"HH:MM MM/DD/YYYY\"";
-					if(send(new_fd, prompt.c_str(), numbytes, 0) != -1)
-					{
-						numbytes = recv(new_fd, recvbuf, 128, 0);
-						startTime = recvbuf;
-
-						if(startTime.size() != 16)
-						{
-							strcpy(recvbuf, "Improper start time date format. Operation cancelled.");
-							valid = false;
-						}
-
-					}
-					
-					if(valid)
-					{
-						prompt = "Enter end date with format \"HH:MM MM/DD/YYYY\"";
-						if(send(new_fd, prompt.c_str(), numbytes, 0) != -1)
-						{
-							numbytes = recv(new_fd, recvbuf, 128, 0);
-							endTime = recvbuf;
-							if(endTime.size() != 16)
-							{
-								strcpy(recvbuf, "Improper end time date format. Operation Cancelled.");
-								valid = false;
-							}
-						}
-						
-						if(valid)
-						{
-							if(ApptConflict(username, startTime, endTime))
-							{
-								strcpy(recvbuf, "ERROR: Time conflict. Unable to add appointment.");
-							}
-							else
-							{
-		
-								prompt = "Enter place for appointment";
-								if(send(new_fd, prompt.c_str(), numbytes, 0) != -1)
-								{
-									numbytes = recv(new_fd, recvbuf, 128, 0);
-									place = recvbuf;
-								}
-		
-								prompt = "Enter contents of appointment";
-								if(send(new_fd, prompt.c_str(), numbytes, 0) != -1)
-								{
-									numbytes = recv(new_fd, recvbuf, 128, 0);
-									content = recvbuf;
-								}
-		
-								AddAppt(username, startTime, endTime, place, content);
-		
-		
-								strcpy(recvbuf, "appt added successfully");
-							}
-						}
-					}
-				}
+            if(username == "-1" || username == "")
+            {
+                strcpy(recvbuf, "please login by entering command \"login\" to view appointments.");
+            }
+            else
+            {
+                bool valid = true;
+                string startTime, endTime, place, content;
+                //add appt here
+                string prompt = "Enter start date with format \"HH:MM MM/DD/YYYY\"";
+                if(send(new_fd, prompt.c_str(), numbytes, 0) != -1)
+                {
+                    numbytes = recv(new_fd, recvbuf, 128, 0);
+                    startTime = recvbuf;
+                    
+                    if(startTime.size() != 16)
+                    {
+                        strcpy(recvbuf, "Improper start time date format. Operation cancelled.");
+                        valid = false;
+                    }
+                    
+                }
+                
+                if(valid)
+                {
+                    prompt = "Enter end date with format \"HH:MM MM/DD/YYYY\"";
+                    if(send(new_fd, prompt.c_str(), numbytes, 0) != -1)
+                    {
+                        numbytes = recv(new_fd, recvbuf, 128, 0);
+                        endTime = recvbuf;
+                        if(endTime.size() != 16)
+                        {
+                            strcpy(recvbuf, "Improper end time date format. Operation Cancelled.");
+                            valid = false;
+                        }
+                    }
+                    
+                    if(valid)
+                    {
+                        if(ApptConflict(username, startTime, endTime))
+                        {
+                            strcpy(recvbuf, "ERROR: Time conflict. Unable to add appointment.");
+                        }
+                        else
+                        {
+                            
+                            prompt = "Enter place for appointment";
+                            if(send(new_fd, prompt.c_str(), numbytes, 0) != -1)
+                            {
+                                numbytes = recv(new_fd, recvbuf, 128, 0);
+                                place = recvbuf;
+                            }
+                            
+                            prompt = "Enter contents of appointment";
+                            if(send(new_fd, prompt.c_str(), numbytes, 0) != -1)
+                            {
+                                numbytes = recv(new_fd, recvbuf, 128, 0);
+                                content = recvbuf;
+                            }
+                            
+                            AddAppt(username, startTime, endTime, place, content);
+                            
+                            
+                            strcpy(recvbuf, "appt added successfully");
+                        }
+                    }
+                }
+            }
+        }
+            
+            
+//            string prompt = "enter username for appointment log: ";
+//            if(send(new_fd, prompt.c_str(), numbytes, 0) != -1)
+//            {
+//                numbytes = recv(new_fd, recvbuf, 128, 0);
+//                username = recvbuf;
+//                if(username != activeUser)
+//                {
+//                    prompt = "Enter password to login and add appt:";
+//                    if(send(new_fd, prompt.c_str(), numbytes, 0) != -1)
+//                    {
+//                        numbytes = recv(new_fd, recvbuf, 128, 0);
+//                        password = recvbuf;
+//                        if(Login(username, password) != "")
+//                        {
+//                            //error case
+//                            strcpy(recvbuf, "Unable to login user and so unable to add appt.");
+//                        }
+//                        else
+//                        {
+//                            activeUser = username;
+//                        }
+//                    }
+//                }
+//                if(activeUser == username)
+//                {
+//                    bool valid = true;
+//                    string startTime, endTime, place, content;
+//                    //add appt here
+//                    prompt = "Enter start date with format \"HH:MM MM/DD/YYYY\"";
+//                    if(send(new_fd, prompt.c_str(), numbytes, 0) != -1)
+//                    {
+//                        numbytes = recv(new_fd, recvbuf, 128, 0);
+//                        startTime = recvbuf;
+//
+//                        if(startTime.size() != 16)
+//                        {
+//                            strcpy(recvbuf, "Improper start time date format. Operation cancelled.");
+//                            valid = false;
+//                        }
+//
+//                    }
+//
+//                    if(valid)
+//                    {
+//                        prompt = "Enter end date with format \"HH:MM MM/DD/YYYY\"";
+//                        if(send(new_fd, prompt.c_str(), numbytes, 0) != -1)
+//                        {
+//                            numbytes = recv(new_fd, recvbuf, 128, 0);
+//                            endTime = recvbuf;
+//                            if(endTime.size() != 16)
+//                            {
+//                                strcpy(recvbuf, "Improper end time date format. Operation Cancelled.");
+//                                valid = false;
+//                            }
+//                        }
+//
+//                        if(valid)
+//                        {
+//                            if(ApptConflict(username, startTime, endTime))
+//                            {
+//                                strcpy(recvbuf, "ERROR: Time conflict. Unable to add appointment.");
+//                            }
+//                            else
+//                            {
+//
+//                                prompt = "Enter place for appointment";
+//                                if(send(new_fd, prompt.c_str(), numbytes, 0) != -1)
+//                                {
+//                                    numbytes = recv(new_fd, recvbuf, 128, 0);
+//                                    place = recvbuf;
+//                                }
+//
+//                                prompt = "Enter contents of appointment";
+//                                if(send(new_fd, prompt.c_str(), numbytes, 0) != -1)
+//                                {
+//                                    numbytes = recv(new_fd, recvbuf, 128, 0);
+//                                    content = recvbuf;
+//                                }
+//
+//                                AddAppt(username, startTime, endTime, place, content);
+//
+//
+//                                strcpy(recvbuf, "appt added successfully");
+//                            }
+//                        }
+//                    }
 				
-			}
-		}
 
 		else if(strncmp(recvbuf, "remove appt", 11) == 0)
 		{
@@ -463,13 +532,13 @@ int main(void)
                         //-------BY YEAR------//
                         string startYear, endYear;
                         strcpy(recvbuf, "yearly appts");
-                        prompt = "specify start year: ";
+                        prompt = "specify start year (left bound): ";
                         if(send(new_fd, prompt.c_str(), numbytes, 0) != -1)
                         {
                             numbytes = recv(new_fd, recvbuf, 128, 0);
                             startYear = recvbuf;
                         }
-                        prompt = "Specify end year: ";
+                        prompt = "Specify end year (right bound): ";
                         if(send(new_fd, prompt.c_str(), numbytes, 0) != -1)
                         {
                             numbytes = recv(new_fd, recvbuf, 128, 0);
@@ -545,11 +614,60 @@ int main(void)
                 }
             }
 		}
-		
+        //------------------ MODIFY APPT ----------------------//
+		else if(strncmp(recvbuf, "modify appt", 11) == 0)
+        {
+            cout << "username is: " << username << endl;
+            if(username == "-1" || username == "")
+            {
+                strcpy(recvbuf, "please login by entering command \"login\" to update appointments.");
+            }
+            else
+            {
+                string modifyNum, modifyField, modifyValue;
+                int modifyNumInt;
+                
+                string prompt = "Select appt to modify:\n" + ViewAllAppts(username);
+                if(send(new_fd, prompt.c_str(), numbytes, 0) != -1)
+                {
+                    numbytes = recv(new_fd, recvbuf, 128, 0);
+                    modifyNum = recvbuf;
+                    modifyNumInt;
+                    
+                    stringstream ss(modifyNum);
+                    ss >> modifyNumInt;
+                }
+                
+                prompt = "What field would you like to modify? [start date/end date/place/contents]:\n";
+                if(send(new_fd, prompt.c_str(), numbytes, 0) != -1)
+                {
+                    numbytes = recv(new_fd, recvbuf, 128, 0);
+                    modifyField = recvbuf;
+                    
+                }
+                if(modifyField == "start date" || modifyField == "end date" || modifyField == "place" || modifyField == "contents")
+                {
+                    prompt = "Enter new value:\n";
+                    if(send(new_fd, prompt.c_str(), numbytes, 0) != -1)
+                    {
+                        numbytes = recv(new_fd, recvbuf, 128, 0);
+                        modifyValue = recvbuf;
+                    }
+                    
+                    ModifyAppt(username, modifyNumInt, modifyField, modifyValue);
+                    
+                    strcpy(recvbuf, "Appointment has been successfully modified.");
+                }
+                else
+                {
+                    strcpy(recvbuf, "Invalid selection. Operation cancelled.");
+                }
+            }
+        }
 		//------------------ HELP ----------------------//
 		else if(strncmp(recvbuf, "help", 4) == 0)
 		{
-			strcpy(recvbuf,  "\nadd user\ndelete user\nmodify user\nadd appt\nremove appt\nmodify appt\nupdate appt\nview appts\n");
+			strcpy(recvbuf,  "\nadd user\ndelete user\nmodify user\nadd appt\nremove appt\nmodify appt\nview appts\n");
 		}
 
 		//--------------------------------------------------------------//

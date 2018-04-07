@@ -35,6 +35,9 @@ string GetApptContentsByUser(string username);
 bool DeleteAppt(string username, int toDelete);
 string ViewAppts(string username, string by, string startCritera = "", string endCriteria = "", string dayCriteria = "");
 string ViewApptsByDay(string username,  string yearParam, string month, string startDayParam, string endDayParam);
+string ViewAllAppts(string username);
+
+string ModifyAppt(string username, int numToDelete, string modifyField, string modifyValue);
 
 
 #endif

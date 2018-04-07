@@ -667,16 +667,6 @@ string ViewApptsByDay(string username, string yearParam, string monthParam, stri
                     stringstream t4(endDayParam);
                     t4 >> endDayParamInt;
                     
-                    
-                    
-//                    cout << "month find success" << endl;
-//
-//                    cout << "startDayParamInt: " << startDayParamInt << endl;
-//                    cout << "startDayInt: " << startDayInt << endl;
-//                    cout << "endDayParamInt" << endDayParamInt << endl;
-//                    cout << "endDayInt: " << endDayInt << endl;
-                    
-                    
                     if((startDayInt >= startDayParamInt && startDayInt <= endDayParamInt) || (endDayInt >= startDayParamInt && endDayInt <= endDayParamInt))
                     {
                         cout << "We have a day winner" << endl;
@@ -754,7 +744,7 @@ string ViewAppts(string username, string by, string startCriteria, string endCri
                 
                 if(startYearInt >= yearLeftBound && startYearInt <= yearRightBound)
                 {
-                    returnAppts += ("\n" + content + ":" + startYear);
+                    returnAppts += ("\n-" + content + ":" + startMonth + "/" + startYear);
                 }
             }
             else if(by == "month")
@@ -769,7 +759,7 @@ string ViewAppts(string username, string by, string startCriteria, string endCri
                 
                 if(startYear == yearToFind && startMonth == monthToFind)
                 {
-                    returnAppts += ("\n" + content + ":" + startMonth + "/" + startYear);
+                    returnAppts += ("\n-" + content + ":" + startMonth + "/" + startYear);
                 }
                 
             }
@@ -782,6 +772,153 @@ string ViewAppts(string username, string by, string startCriteria, string endCri
     return returnAppts + "\n";
 }
 
+
+
+string ViewAllAppts(string username)
+{
+    std::vector<string> lines;
+    ifstream infile;
+    infile.open("appts.txt");
+    string line;
+    
+    while(getline(infile, line))
+    {
+        lines.push_back(line);
+    }
+    infile.close();
+    
+    
+    int findNum = 1;
+    
+    string returnAppts = "";
+    
+    for(int i = 0; i < lines.size(); ++i)
+    {
+        std::stringstream ss(lines[i]);
+        string name, place, content;
+        string startHour, startMinutes, startMonth, startDay, startYear;
+        string endHour, endMinutes, endMonth, endDay, endYear;
+        
+        getline(ss, name, ',');
+        getline(ss, startHour, ':');
+        getline(ss, startMinutes, ' ');
+        getline(ss, startMonth, '/');
+        
+        getline(ss, startDay, '/');
+        getline(ss, startYear, ',');
+        
+        getline(ss, endHour, ':');
+        getline(ss, endMinutes, ' ');
+        getline(ss, endMonth, '/');
+        getline(ss, endDay, '/');
+        getline(ss, endYear, ',');
+        
+        getline(ss, place, ',');
+        getline(ss, content);
+        
+        if(username == name)
+        {
+            string temp;
+            stringstream t;
+            t << findNum;
+            t >> temp;
+            
+            returnAppts += "\n" + temp + ") " + content;
+            findNum++;
+        }
+    }
+    return returnAppts + "\n";
+}
+
+
+string ModifyAppt(string username, int numToDelete, string modifyField, string modifyValue)
+{
+    std::vector<string> lines;
+    std::vector<string> newLines;
+    ifstream infile;
+    infile.open("appts.txt");
+    string line;
+    
+    while(getline(infile, line))
+    {
+        lines.push_back(line);
+    }
+    infile.close();
+    
+    
+    int findNum = 1;
+    
+    string returnAppts = "";
+    
+    for(int i = 0; i < lines.size(); ++i)
+    {
+        std::stringstream ss(lines[i]);
+        string name, place, content;
+        string startHour, startMinutes, startMonth, startDay, startYear;
+        string endHour, endMinutes, endMonth, endDay, endYear;
+        
+        getline(ss, name, ',');
+        getline(ss, startHour, ':');
+        getline(ss, startMinutes, ' ');
+        getline(ss, startMonth, '/');
+        
+        getline(ss, startDay, '/');
+        getline(ss, startYear, ',');
+        
+        getline(ss, endHour, ':');
+        getline(ss, endMinutes, ' ');
+        getline(ss, endMonth, '/');
+        getline(ss, endDay, '/');
+        getline(ss, endYear, ',');
+        
+        getline(ss, place, ',');
+        getline(ss, content);
+        
+        if(username == name)
+        {
+            if(findNum == numToDelete)
+            {
+                if(modifyField == "start date")
+                {
+                    cout << "creating new line" << endl;
+                    line = username + "," + modifyValue + "," + endHour + ":" + endMinutes + " " + endMonth + "/" + endDay + "/" + endYear + "," + place + "," + content;
+                    cout << "new line: " << line << endl;
+                }
+                else if(modifyField == "end date")
+                {
+                    line = username + "," + startHour + ":" + startMinutes + " " + startMonth + "/" + startDay + "/" + startYear + "," + modifyValue + "," + place + "," + content;
+                }
+                else if(modifyField == "place")
+                {
+                    line = username + "," + startHour + ":" + startMinutes + " " + startMonth + "/" + startDay + "/" + startYear + "," +  endHour + ":" + endMinutes + " " + endMonth + "/" + endDay + "/" + endYear  + "," + modifyValue + "," + content;
+                }
+                else if(modifyField == "contents")
+                {
+                    line = username + "," + startHour + ":" + startMinutes + " " + startMonth + "/" + startDay + "/" + startYear + "," +  endHour + ":" + endMinutes + " " + endMonth + "/" + endDay + "/" + endYear  + "," + place + "," + modifyValue;
+                }
+                
+                findNum++;
+            }
+            else
+            {
+                findNum++;
+                line = lines[i];
+            }
+            
+            cout << "pushing: " << line << endl;
+            newLines.push_back(line);
+        }
+        
+        ofstream outfile("appts.txt");
+        for(int i = 0; i < newLines.size(); ++i)
+        {
+            outfile << newLines[i] << endl;
+        }
+        outfile.close();
+    }
+    
+    return "";
+}
 
 
 
