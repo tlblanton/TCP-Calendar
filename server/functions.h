@@ -33,5 +33,8 @@ bool ApptConflict(string username, string startTime, string endTime);
 string GetApptContentsByUser(string username);
 
 bool DeleteAppt(string username, int toDelete);
+string ViewAppts(string username, string by, string startCritera = "", string endCriteria = "", string dayCriteria = "");
+string ViewApptsByDay(string username,  string yearParam, string month, string startDayParam, string endDayParam);
+
 
 #endif

@@ -446,32 +446,103 @@ int main(void)
 		//------------------ VIEW APPTS ----------------------//
 		else if(strncmp(recvbuf, "view appts", 10) == 0)
 		{
-			string prompt = "What woul you like to view apartments by? [year/month/day/time]";
-			if(send(new_fd, prompt.c_str(), numbytes, 0) != -1)
-			{
-				numbytes = recv(new_fd, recvbuf, 128, 0);
-				string response = recvbuf;
-				if(response == "year")
-				{
-					strcpy(recvbuf, "yearly appts");
-				}
-				else if(response == "month")
-				{
-					strcpy(recvbuf, "monthly appts");
-				}
-				else if(response == "day")
-				{
-					strcpy(recvbuf, "daily appts");
-				}
-				else if(response == "time")
-				{
-					strcpy(recvbuf, "time appts");
-				}
-				else
-				{
-					strcpy(recvbuf, "Invalid selection. Returning to start.");
-				}
-			}
+            cout << "username is: " << username << endl;
+            if(username == "-1" || username == "")
+            {
+                strcpy(recvbuf, "please login by entering command \"login\" to view appointments.");
+            }
+            else
+            {
+                string prompt = "What would you like to view apartments by? [year/month/day/time]";
+                if(send(new_fd, prompt.c_str(), numbytes, 0) != -1)
+                {
+                    numbytes = recv(new_fd, recvbuf, 128, 0);
+                    string response = recvbuf;
+                    if(response == "year")
+                    {
+                        string startYear, endYear;
+                        strcpy(recvbuf, "yearly appts");
+                        prompt = "specify start year: ";
+                        if(send(new_fd, prompt.c_str(), numbytes, 0) != -1)
+                        {
+                            numbytes = recv(new_fd, recvbuf, 128, 0);
+                            startYear = recvbuf;
+                        }
+                        prompt = "Specify end year: ";
+                        if(send(new_fd, prompt.c_str(), numbytes, 0) != -1)
+                        {
+                            numbytes = recv(new_fd, recvbuf, 128, 0);
+                            endYear = recvbuf;
+                        }
+                        string yearlyAppts = ViewAppts(username, "year", startYear, endYear);
+                        strcpy(recvbuf, yearlyAppts.c_str());
+                    }
+                    else if(response == "month")
+                    {
+                        string mon, yr;
+                        prompt = "Which month would you like to look at? [1-11]: ";
+                        if(send(new_fd, prompt.c_str(), numbytes, 0) != -1)
+                        {
+                            numbytes = recv(new_fd, recvbuf, 128, 0);
+                            mon = recvbuf;
+                        }
+                        prompt = mon + " of which year? ";
+                        if(send(new_fd, prompt.c_str(), numbytes, 0) != -1)
+                        {
+                            numbytes = recv(new_fd, recvbuf, 128, 0);
+                            yr = recvbuf;
+                        }
+                        string yearlyAppts = ViewAppts(username, "month", mon, yr);
+                        strcpy(recvbuf, yearlyAppts.c_str());
+                        
+                    }
+                    else if(response == "day")
+                    {
+                        string mon, yr, startDay, endDay;
+                        prompt = "Which month would you like to look at? [1-11]: ";
+                        if(send(new_fd, prompt.c_str(), numbytes, 0) != -1)
+                        {
+                            numbytes = recv(new_fd, recvbuf, 128, 0);
+                            mon = recvbuf;
+                        }
+                        
+                        prompt = "Specify start Date: ";
+                        if(send(new_fd, prompt.c_str(), numbytes, 0) != -1)
+                        {
+                            numbytes = recv(new_fd, recvbuf, 128, 0);
+                            startDay = recvbuf;
+                        }
+                        
+                        prompt = "Specify end Date: ";
+                        if(send(new_fd, prompt.c_str(), numbytes, 0) != -1)
+                        {
+                            numbytes = recv(new_fd, recvbuf, 128, 0);
+                            endDay = recvbuf;
+                        }
+                        
+                        prompt = mon + " of which year? ";
+                        if(send(new_fd, prompt.c_str(), numbytes, 0) != -1)
+                        {
+                            numbytes = recv(new_fd, recvbuf, 128, 0);
+                            yr = recvbuf;
+                        }
+                        string dailyAppts = ViewApptsByDay(username, yr, mon, startDay, endDay);
+                        
+                        
+                        strcpy(recvbuf, dailyAppts.c_str());
+                        
+                        //strcpy(recvbuf, "daily appts");
+                    }
+                    else if(response == "time")
+                    {
+                        strcpy(recvbuf, "time appts");
+                    }
+                    else
+                    {
+                        strcpy(recvbuf, "Invalid selection. Returning to start.");
+                    }
+                }
+            }
 		}
 		
 		//------------------ HELP ----------------------//
