@@ -104,7 +104,6 @@ string Login(string username, string password)
 				if(count == 1 && ourUsername)
 				{
 					string decryptedPass = XorEncryptionToggle(substr);
-					cout << "decryptedPass: " << decryptedPass << " is being compared to password: " << password << endl; 
 					if(decryptedPass == password)
 					{
 						return "";
@@ -113,10 +112,6 @@ string Login(string username, string password)
 				}
 				count++;
 			}
-			//cout << "The results: " << endl;
-			//for (int i=0; i< vect.size(); i++)
-        		//	std::cout << vect.at(i)<<std::endl;			
-
 		}
 
 
@@ -146,8 +141,6 @@ int AddUser(User newUser)
 
 	outfile << newUser.username << "," << encryptedPassword << "," << newUser.phone << "," << newUser.email << endl;
 	
-	cout << "User added to file" << endl;	
-
 	return 0;
 }
 
@@ -428,12 +421,10 @@ bool AddAppt(string username, string startTime, string endTime, string place, st
 	//TODO: User ifstream.getline() here to get full line. 
 	while(getline(infile, line))
 	{
-		cout << "pushing back: " << line << endl;
 		lines.push_back(line);
 	}
 	string newLine = username + "," + startTime + "," + endTime + "," + place + "," + content;
 
-	cout << "new appt is: " << newLine << endl;
 	lines.push_back(newLine);
 
 	infile.close();
@@ -441,7 +432,6 @@ bool AddAppt(string username, string startTime, string endTime, string place, st
 	ofstream outfile("appts.txt");
 	for(int i = 0; i < lines.size(); ++i)
 	{
-		cout << "WRITING: " << lines[i] << endl;
 		outfile << lines[i] << endl;
 	}
 	outfile.close();
@@ -638,12 +628,10 @@ string ViewApptsByDay(string username, string yearParam, string monthParam, stri
         
         if(username == name)
         {
-            cout << "username success" << endl;
             if(startYear == yearParam)
             {
                 int smInt, mpInt;
                 
-                cout << "Year find success" << endl;
                 stringstream s1(startMonth);
                 s1 >> smInt;
                 
@@ -669,7 +657,6 @@ string ViewApptsByDay(string username, string yearParam, string monthParam, stri
                     
                     if((startDayInt >= startDayParamInt && startDayInt <= endDayParamInt) || (endDayInt >= startDayParamInt && endDayInt <= endDayParamInt))
                     {
-                        cout << "We have a day winner" << endl;
                         returnAppts += ("\n- " + content + " -> " + startHour + ":" + startMinutes + " " + startMonth + "/" + startDay + "/" + startYear);
                     }
                 }
@@ -749,13 +736,9 @@ string ViewAppts(string username, string by, string startCriteria, string endCri
             }
             else if(by == "month")
             {
-                cout << "checking month" << endl;
-                
                 string monthToFind = startCriteria;
-                cout << "month to find: " << monthToFind << endl;
                 
                 string yearToFind = endCriteria;
-                cout << "year to find: " << yearToFind << endl;
                 
                 if(startYear == yearToFind && startMonth == monthToFind)
                 {
@@ -880,9 +863,7 @@ string ModifyAppt(string username, int numToDelete, string modifyField, string m
             {
                 if(modifyField == "start date")
                 {
-                    cout << "creating new line" << endl;
                     line = username + "," + modifyValue + "," + endHour + ":" + endMinutes + " " + endMonth + "/" + endDay + "/" + endYear + "," + place + "," + content;
-                    cout << "new line: " << line << endl;
                 }
                 else if(modifyField == "end date")
                 {
@@ -905,7 +886,6 @@ string ModifyAppt(string username, int numToDelete, string modifyField, string m
                 line = lines[i];
             }
             
-            cout << "pushing: " << line << endl;
             newLines.push_back(line);
         }
         

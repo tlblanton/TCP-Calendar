@@ -101,7 +101,6 @@ int main(void)
             close(sockfd); // child doesn't need the listener
 	    recvbuf=(char *) calloc(128,sizeof(char));
             for(;;) {
-		cout << "at beginning of for(;;)";
 	    	numbytes=recv(new_fd,recvbuf,128,0);
 		if (numbytes < 0) {
 			perror("recv");
@@ -199,9 +198,7 @@ int main(void)
 					}
 					else
 					{
-						cout << "error" << endl;
 						strcpy(recvbuf, "ERROR: Credentials error. Try typing [add user] to create new account.");
-						cout << "revbuf: " << recvbuf << endl;
 					}
 				}
 			}		
@@ -515,7 +512,6 @@ int main(void)
 		//------------------ VIEW APPTS ----------------------//
 		else if(strncmp(recvbuf, "view appts", 10) == 0)
 		{
-            cout << "username is: " << username << endl;
             if(username == "-1" || username == "")
             {
                 strcpy(recvbuf, "please login by entering command \"login\" to view appointments.");
@@ -551,7 +547,7 @@ int main(void)
                     else if(response == "month")
                     {
                         string mon, yr;
-                        prompt = "Which month would you like to look at? [1-11]: ";
+                        prompt = "Which month would you like to look at? [1-12]: ";
                         if(send(new_fd, prompt.c_str(), numbytes, 0) != -1)
                         {
                             numbytes = recv(new_fd, recvbuf, 128, 0);
@@ -571,7 +567,7 @@ int main(void)
                     else if(response == "day")
                     {
                         string mon, yr, startDay, endDay;
-                        prompt = "Which month would you like to look at? [1-11]: ";
+                        prompt = "Which month would you like to look at? [1-12]: ";
                         if(send(new_fd, prompt.c_str(), numbytes, 0) != -1)
                         {
                             numbytes = recv(new_fd, recvbuf, 128, 0);
@@ -617,7 +613,6 @@ int main(void)
         //------------------ MODIFY APPT ----------------------//
 		else if(strncmp(recvbuf, "modify appt", 11) == 0)
         {
-            cout << "username is: " << username << endl;
             if(username == "-1" || username == "")
             {
                 strcpy(recvbuf, "please login by entering command \"login\" to update appointments.");
